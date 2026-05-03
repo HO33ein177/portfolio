@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Card</title>
+<style>
+    body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #333; /* Just for preview background */
+    }
+    .card {
+        width: 3.5in;
+        height: 2in;
+        background-color: #111; /* Deep black */
+        border-top: 3px solid #c5a059; /* Gold accent border */
+        color: #fff;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        box-sizing: border-box;
+        padding: 0.25in;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    .info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .name {
+        font-size: 14pt;
+        font-weight: 700;
+        letter-spacing: 1px;
+        margin: 0;
+        color: #c5a059; /* Gold accent color */
+    }
+    .title {
+        font-size: 7pt;
+        color: #888; /* Gray */
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-top: 2px;
+        margin-bottom: 12px;
+    }
+    .contact {
+        font-size: 7pt;
+        color: #ccc;
+        line-height: 1.5;
+    }
+    .qr-container {
+        width: 0.8in;
+        height: 0.8in;
+    }
+    .qr-container img {
+        width: 100%;
+        height: 100%;
+        display: block; /* Removes any extra space below the image */
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="info">
+        <h1 class="name">YOUR NAME</h1>
+        <div class="title">Photographer</div>
+        <div class="contact">
+            hello@auracapture.com.au<br>
+            +61 000 000 000<br>
+            auracapture.com.au
+        </div>
+    </div>
+
+    <div class="qr-container">
+        <!--
+          IMAGE PLACEHOLDER:
+          Replace the 'src' value below with the path to your actual QR code image.
+          For example: src="my-qrcode.png"
+        -->
+            <img src="{{ url_for('static', filename='qrcode.png') }}" alt="QR Code for auracapture.com.au">
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Portfolio</title>
+    <style>
+        /* --- Base Styles --- */
+        *, *::before, *::after {
+            box-sizing: border-box; /* Crucial for mobile: stops padding from pushing inputs off-screen */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .header a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .header a.back-link:hover {
+            text-decoration: underline;
+        }
+        .btn-logout {
+            background: #dc3545;
+            color: white !important;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .btn-logout:hover {
+            background: #c82333;
+            text-decoration: none !important;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        button[type="submit"]:hover {
+            background-color: #218838;
+        }
+        .item-list {
+            margin-top: 40px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .item-info img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .item-details strong {
+            display: block;
+            margin-bottom: 5px;
+            word-break: break-word; /* Prevents long titles from breaking layout */
+        }
+        .badge {
+            background: #007bff;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+        .badge.academic {
+            background: #6f42c1;
+        }
+                /* Delete Button Style */
+                /* Delete Button Style */
+        button[type="submit"].btn-delete {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        button[type="submit"].btn-delete:hover {
+            background-color: #cc0000;
+            transform: scale(1.05);
+        }
+
+
+        .flash-messages {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 4px;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px; /* Reduce padding on smaller screens */
+            }
+            .admin-container {
+                padding: 20px;
+            }
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .header-actions a {
+                width: 100%;
+            }
+            .btn-logout {
+                width: 100%;
+                display: block;
+            }
+            button[type="submit"] {
+                width: 100%; /* Full width upload button */
+            }
+            .item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .item form {
+                width: 100%;
+            }
+            .btn-delete {
+                width: 100%; /* Full width delete button on tiny screens */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="admin-container">
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+        <div class="header-actions">
+            <a href="{{ url_for('home') }}" class="back-link">&larr; Back to Main Site</a>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for message in messages %}
+            <p style="margin: 0;">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Upload Form -->
+    <h2>Upload New Image/Project</h2>
+    <form action="{{ url_for('admin') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" required placeholder="Enter title here...">
+        </div>
+
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select name="category" id="category" required>
+                <option value="photography">Photography</option>
+                <option value="academic">Microbiology / Academic</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="file">Select File</label>
+            <input type="file" name="file" id="file" required accept="image/*">
+        </div>
+
+        <button type="submit">Upload Item</button>
+    </form>
+
+    <!-- Uploaded Items List -->
+    <div class="item-list">
+        <h2>Manage Uploaded Items</h2>
+
+        {% for item in items %}
+        <div class="item">
+            <div class="item-info">
+                <img src="{{ url_for('static', filename='uploads/' + item.filename) }}" alt="{{ item.title }}">
+                <div class="item-details">
+                    <strong>{{ item.title }}</strong>
+                    <span class="badge {% if item.category == 'academic' %}academic{% endif %}">
+                        {{ item.category | capitalize }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Delete Form -->
+            <form action="{{ url_for('delete_item', item_id=item.id) }}" method="POST" style="margin: 0;">
+                <button type="submit" class="btn-delete" onclick="return confirm('Are you sure you want to delete \'{{ item.title }}\'? This action cannot be undone.');">
+                    Delete
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <p>No items found in the database. Upload some above!</p>
+        {% endfor %}
+    </div>
+
+</div>
+
+</body>
+</html>
