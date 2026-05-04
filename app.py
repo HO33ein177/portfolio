@@ -17,7 +17,6 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 # 2. Join the base directory with your database filename
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'portfolio.db')
 
-db = SQLAlchemy(app)
 
 # Get the credentials from the .env file
 ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
