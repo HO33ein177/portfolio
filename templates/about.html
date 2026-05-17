@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-container">
+  <section id="about" class="about-section">
+    <div class="about-container">
+
+      <!-- ===== LEFT COLUMN - IMAGE ===== -->
+      <div class="about-image-column">
+        <img src="{{ url_for('static', filename='images/profile-picture.jpeg') }}" alt="A professional photo of [Your Name]" class="profile-picture">
+      </div>
+
+      <!-- ===== RIGHT COLUMN - TEXT CONTENT ===== -->
+      <div class="about-text-column">
+        <h1 class="about-title">About Me</h1>
+        <h3 class="about-subtitle">Designer, Developer & Creative Thinker</h3>
+
+        <p>
+Hello! I’m Farnaz, a Sydney-based photographer with a passion for storytelling. I first picked up a camera out of a desire to capture the world as I see it—to freeze the magic of a moment and find the beauty in the details.
+
+That desire has grown into a career dedicated to crafting authentic visual stories. My work is diverse, spanning the clean, precise world of Product and Branding Photography, the vibrant energy of Events and Sports, and the candid moments of Lifestyle Photography. For me, every project is a new story waiting to be told.
+
+When I’m not on a shoot, I love hiking coastal trails at sunrise, experimenting with old film cameras, or simply getting lost in the city and documenting everyday life        </p>
+
+
+
+        <div class="about-cta">
+          <a href="{{ url_for('contact') }}" class="btn btn-primary">Let's Connect</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+{% endblock %}

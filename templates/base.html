@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- The title will be defined in each specific page -->
+    <title>{% block title %}Aura Capture{% endblock %}</title>
+
+    <!-- Lightbox2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" rel="stylesheet">
+
+    <!-- Link to your main stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}" class="{{ 'active' if active_page == 'home' else '' }}">Home</a></li>
+            <li><a href="{{ url_for('portfolio') }}" class="{{ 'active' if active_page == 'portfolio' else '' }}">Portfolio</a></li>
+            <li><a href="{{ url_for('about') }}" class="{{ 'active' if active_page == 'about' else '' }}">About</a></li>
+            <li><a href="{{ url_for('reviews') }}" class="{{ 'active' if active_page == 'reviews' else '' }}">Reviews</a></li>
+            <li><a href="{{ url_for('news') }}" class="{{ 'active' if active_page == 'news' else '' }}">News</a></li>
+            <li><a href="{{ url_for('contact') }}" class="{{ 'active' if active_page == 'contact' else '' }}">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Block -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Aura Capture. All Rights Reserved.</p>
+        <p style="font-size: 0.8rem; margin-top: 5px;"><a href="{{ url_for('login') }}" style="color: inherit; text-decoration: none; opacity: 0.6;">Admin Panel</a></p>
+    </footer>
+
+    <!-- jQuery is required by Lightbox2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Lightbox2 JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+
+    <!-- Block for page-specific JavaScript -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

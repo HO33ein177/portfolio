@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    /* CSS Grid to put items in a row */
+    .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+        padding: 40px 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .category-card {
+        background-color: #1a1a1a;
+        border-radius: 8px;
+        overflow: hidden;
+        text-decoration: none;
+        color: white;
+        transition: transform 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .category-image {
+        width: 100%;
+        height: 250px; /* Fixed height */
+        object-fit: cover; /* Prevents stretching, crops proportionally */
+    }
+
+    .category-info {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .category-info h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+        color: #fff;
+    }
+
+    /* Limits the intro text to exactly 2 lines */
+    .category-intro {
+        color: #aaa;
+        font-size: 0.9rem;
+        margin-top: 15px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        line-height: 1.4;
+    }
+</style>
+
+<div class="portfolio-grid">
+    {% for category_name, item in categories.items() %}
+    <a href="{{ url_for('portfolio_category', category_name=category_name) }}" class="category-card">
+        <!-- Cover Image -->
+        <img src="{{ url_for('static', filename='uploads/' + item.filename) }}" alt="{{ category_name }}" class="category-image">
+
+        <div class="category-info">
+            <h3>{{ category_name | upper }}</h3>
+
+            <!-- Intro Text -->
+            {% if intros and category_name in intros %}
+                <p class="category-intro">{{ intros[category_name] }}</p>
+            {% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}
