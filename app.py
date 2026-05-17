@@ -1,142 +1,218 @@
+# app.py
+from collections import defaultdict
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.utils import secure_filename
-from flask import Flask, render_template, request, redirect, url_for, flash, session
-from functools import wraps
+from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-import os
-from dotenv import load_dotenv
+from werkzeug.utils import secure_filename
+from sqlalchemy import desc
 
-load_dotenv()
-basedir = os.path.abspath(os.path.dirname(__file__))
-
+# --- App Configuration ---
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
-# 2. Join the base directory with your database filename
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a_default_secret_key_for_development')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'portfolio.db')
-
-
-# Get the credentials from the .env file
-ADMIN_USERNAME = os.getenv('ADMIN_USERNAME')
-admin_raw_password = os.getenv('ADMIN_PASSWORD')
-
-# Hash the password after loading it
-ADMIN_PASSWORD_HASH = generate_password_hash(admin_raw_password)
-
-# --- Login Required Decorator ---
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'logged_in' not in session:
-            flash('Please log in to access this page.', 'error')
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
-# fixed
-# --- Configuration ---
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///portfolio.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = 'static/uploads'  # Images will be saved here
-app.config['SECRET_KEY'] = 'super-secret-key'
-
-# Create upload folder if it doesn't exist
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'static/uploads')
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB limit
 
 db = SQLAlchemy(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 
-# --- Database Model ---
+# --- Database Models ---
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(150), nullable=False)
+
+
 class PortfolioItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    category = db.Column(db.String(50), nullable=False)  # 'photography' or 'academic'
+    category = db.Column(db.String(50), nullable=False)
     filename = db.Column(db.String(100), nullable=False)
 
 
-# Initialize Database
-with app.app_context():
-    db.create_all()
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
-# --- Routes ---
+# --- Public Facing Routes ---
+
 @app.route('/')
 def home():
-    photo_page = request.args.get('photo_page', 1, type=int)
-    acad_page = request.args.get('acad_page', 1, type=int)
+    """Renders the home/landing page."""
+    return render_template('index.html', active_page='home')
 
-    photos = PortfolioItem.query.filter_by(category='photography').paginate(page=photo_page, per_page=6)
-    academic_items = PortfolioItem.query.filter_by(category='academic').paginate(page=acad_page, per_page=6)
+# Add introductions for your categories
+category_intros = {
+    'Product': 'Showcasing products with clarity and creative lighting.',
+    'Lifestyle': 'Capturing authentic moments and natural storytelling.',
+    'Branding': 'Elevating your brand identity through professional imagery.',
+    'Event': 'Documenting the atmosphere and key moments of your special events.',
+    'Sports': 'Action-packed sports photography capturing peak performance.'
+}
 
-    return render_template('index.html', photos=photos, academic_items=academic_items)
+
+
+@app.route('/portfolio')
+def portfolio():
+    # Get all items
+    items = PortfolioItem.query.order_by(desc(PortfolioItem.id)).all()
+
+    # Create a dictionary to hold one representative item for each category
+    categories = {}
+    for item in items:
+        if item.category not in categories:
+            categories[item.category] = item
+
+    # Pass 'intros=category_introductions' here!
+    return render_template('portfolio.html', categories=categories, intros=category_intros, active_page='portfolio')
+
+
+
+
+@app.route('/portfolio/<category_name>')
+def portfolio_category(category_name):
+    # Fetch all items that match the requested category
+    items = PortfolioItem.query.filter_by(category=category_name).all()
+
+    # Get the introduction text, or default to an empty string if not found
+    intro = category_intros.get(category_name, '')
+
+    return render_template('category.html', category_name=category_name, items=items, intro=intro,
+                           active_page='portfolio')
+
+
+@app.route('/about')
+def about():
+    """Renders the about page."""
+    return render_template('about.html', active_page='about')
+
+
+@app.route('/contact')
+def contact():
+    """Renders the contact page."""
+    return render_template('contact.html', active_page='contact')
+
+
+# Placeholder routes for Reviews and News
+@app.route('/reviews')
+def reviews():
+    """Renders the reviews page."""
+    return render_template('reviews.html', active_page='reviews')
+
+
+@app.route('/news')
+def news():
+    """Renders the news page."""
+    return render_template('news.html', active_page='news')
+
+
+# --- Admin & Authentication Routes ---
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # If already logged in, send them straight to admin
-    if 'logged_in' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('admin'))
-
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        # Check if username matches and password is correct
-        if username == ADMIN_USERNAME and check_password_hash(ADMIN_PASSWORD_HASH, password):
-            session['logged_in'] = True
-            flash('Successfully logged in!', 'success')
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password, password):
+            login_user(user)
             return redirect(url_for('admin'))
         else:
-            flash('Invalid username or password.', 'error')
-
+            flash('Invalid username or password', 'danger')
     return render_template('login.html')
 
-@app.route('/logout')
-def logout():
-    session.pop('logged_in', None)
-    flash('You have been logged out.', 'success')
-    return redirect(url_for('login'))
 
-@app.route('/admin', methods=['GET', 'POST'])
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('home'))
+
+
+@app.route('/admin')
 @login_required
 def admin():
-    if request.method == 'POST':
-        title = request.form['title']
-        category = request.form['category']
-        file = request.files['file']
+    items = PortfolioItem.query.order_by(desc(PortfolioItem.id)).all()
+    return render_template('admin.html', items=items)
 
-        if file and file.filename != '':
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-            # Save to database
-            new_item = PortfolioItem(title=title, category=category, filename=filename)
-            db.session.add(new_item)
-            db.session.commit()
-            return redirect(url_for('admin'))
+@app.route('/add', methods=['POST'])
+@login_required
+def add_item():
+    if 'file' not in request.files:
+        flash('No file part', 'danger')
+        return redirect(url_for('admin'))
 
-    all_items = PortfolioItem.query.order_by(PortfolioItem.id.desc()).all()
-    return render_template('admin.html', items=all_items)
+    file = request.files['file']
+    title = request.form['title']
+    category = request.form['category'].strip()
+
+    if file.filename == '' or not title or not category:
+        flash('Missing file, title, or category', 'danger')
+        return redirect(url_for('admin'))
+
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        new_item = PortfolioItem(title=title, category=category, filename=filename)
+        db.session.add(new_item)
+        db.session.commit()
+        flash('Item added successfully!', 'success')
+
+    return redirect(url_for('admin'))
+
+
+@app.route('/edit/<int:item_id>', methods=['POST'])
+@login_required
+def edit_item(item_id):
+    item = PortfolioItem.query.get_or_404(item_id)
+    item.title = request.form['title']
+    item.category = request.form['category'].strip()
+    db.session.commit()
+    flash('Item updated successfully!', 'success')
+    return redirect(url_for('admin'))
 
 
 @app.route('/delete/<int:item_id>', methods=['POST'])
 @login_required
 def delete_item(item_id):
-    # 1. Retrieve the item from the database
     item = PortfolioItem.query.get_or_404(item_id)
 
-    # 2. Construct the file path and delete the file from the server
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], item.filename)
-    if os.path.exists(file_path):
-        os.remove(file_path)
+    # Optional: Delete the file from the filesystem
+    try:
+        os.remove(os.path.join(app.config['UPLOAD_FOLDER'], item.filename))
+    except OSError as e:
+        flash(f"Error deleting file: {e}", "danger")
 
-    # 3. Delete the record from the database
     db.session.delete(item)
     db.session.commit()
-
-    # 4. Redirect back to the admin panel
+    flash('Item deleted successfully!', 'success')
     return redirect(url_for('admin'))
 
 
+# --- Main Execution ---
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    # Make sure the upload folder exists
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+
+    with app.app_context():
+        db.create_all()
+        # Create a default user if none exists
+        if not User.query.filter_by(username='admin').first():
+            hashed_password = generate_password_hash('admin', method='pbkdf2:sha256')
+            new_user = User(username='admin', password=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            print("Default admin user created with password 'admin'. Please change this.")
+
+    app.run(debug=True)
