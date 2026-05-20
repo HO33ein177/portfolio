@@ -4,8 +4,55 @@
 
 {% block content %}
 <!-- Home Section -->
-<section id="home">
-    <h1>Aura Capture</h1>
-    <p>Bringing Your Vision to Life Through the Lens</p>
+<section id="home" class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <h1 class="hero-title">Aura Capture</h1>
+        <p class="hero-subtitle">Bringing Your Vision to Life Through the Lens</p>
+        <a href="{{ url_for('portfolio') }}" class="cta-button">Explore Portfolio</a>
+    </div>
+
 </section>
+<!-- Put this right below your Hero Section -->
+<section class="about-intro container my-5 py-5">
+    <!-- Header Section -->
+    <div class="row justify-content-center text-center mb-5">
+        <div class="col-md-10 col-lg-8">
+            <h3 class="manifesto-tagline mb-4">"Frames that flow, brands that glow."</h3>
+            <h1 class="artist-name mb-2">Farnaz Kalani</h1>
+            <h5 class="artist-title text-muted">Sydney-Based Photographer & Creative Director</h5>
+        </div>
+    </div>
+
+    <!-- Body Text Section -->
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8 about-text">
+            <p class="lead fw-bold text-center mb-5">Creating visuals people feel, remember, and connect with.</p>
+
+            <p>I don’t just create content—I create visual experiences that make brands impossible to ignore.</p>
+
+            <p>I work with brands, businesses, events, and creatives who want more than “just photos” or “just videos.” My approach is about building a strong visual identity that feels elevated, cinematic, modern, and emotionally connected to the audience.</p>
+
+            <p>Every project I take on is approached with intention, creativity, and strategy. From photography and cinematic reels to creative direction, campaign concepts, social media visuals, and brand storytelling—I focus on creating content that not only looks beautiful, but actually helps your brand grow, attract attention, and stand out in a crowded digital world.</p>
+
+            <p>What makes my work different is the way I blend aesthetics with emotion and strategy. I care deeply about creating visuals that feel authentic, premium, memorable, and powerful enough to stop people scrolling.</p>
+
+            <p>I don’t like repetitive content or generic visuals. I’m constantly exploring fresh ideas, unique concepts, stronger storytelling, and new creative directions to make every brand feel distinctive and unforgettable.</p>
+
+            <p>For brands looking for more than a one-time shoot, I also offer ongoing monthly creative partnerships including content planning, campaign ideas, reels, photography, video concepts, posting strategy, creative direction, and audience-focused content designed to build long-term growth and stronger brand presence.</p>
+
+            <!-- Callout / Goal -->
+            <div class="goal-box text-center my-5 py-4">
+                <p class="fw-bold fs-5 mb-2">My goal is simple:</p>
+                <p class="fs-5 fst-italic mb-0">To create content that people feel, remember, and connect with.</p>
+            </div>
+
+            <p class="text-center">If you’re looking for a creative partner who genuinely cares about your brand, values originality, and is committed to helping your business grow through powerful visuals—I’d love to create something exceptional together.</p>
+
+            <!-- Closing -->
+            <h2 class="closing-tagline text-center mt-5 pt-3">Seen. Felt. Remembered.</h2>
+        </div>
+    </div>
+</section>
+
 {% endblock %}
