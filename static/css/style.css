@@ -92,6 +92,7 @@ section {
 }
 
 /* --- Home/Hero Section --- */
+/* --- Home/Hero Section --- */
 #home {
     height: calc(100vh - var(--nav-height));
     display: flex;
@@ -102,11 +103,8 @@ section {
     color: white;
     padding: 0; /* Remove padding for full viewport height */
 
-    /* NEW HERO BACKGROUND */
-    background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)),
-                url('https://images.unsplash.com/photo-1452587925148-ce544e77e70d?q=80&w=2000&auto=format&fit=crop') no-repeat center center;
-    background-size: cover;
-    background-attachment: fixed; /* Parallax effect */
+    /* REMOVED the linear-gradient and background-image here */
+    background: transparent;
 }
 
 
@@ -409,14 +407,12 @@ footer {
    THEME TOGGLE BUTTON & LIGHT MODE
    ========================================= */
 
-/* Overriding your :root variables for Light Mode */
-body.light-mode {
-    --bg-color: #f0f2f5; /* A softer off-white/light gray instead of pure white */
-    --primary-text-color: #212529;
-    --secondary-text-color: #495057;
-    background-image: none !important;
-    background-color: var(--bg-color) !important;
+/* Light Mode Background for Hero Section */
+body.light-mode #home {
+    /* REMOVED the white linear-gradient so the video stays visible in light mode */
+    background: transparent !important;
 }
+
 
 /* Light Mode Background for Hero Section */
 body.light-mode #home {
@@ -603,4 +599,121 @@ body.light-mode .about-cta .btn-primary {
 body.light-mode .about-cta .btn-primary:hover {
     background-color: #000;
     color: #fff;
+}
+/* =========================================
+   Mobile Responsiveness (Phones & Tablets)
+   ========================================= */
+@media screen and (max-width: 768px) {
+    /* Adjust main body and text sizes */
+    body {
+        font-size: 14px;
+    }
+
+    /* Make navigation stack or scroll horizontally */
+    .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        padding: 10px;
+    }
+
+    .nav-links li {
+        margin: 5px 0;
+    }
+
+    /* Stack grid layouts (like About page or Contact) into single columns */
+    .about-container,
+    .contact-container,
+    .main-container {
+        flex-direction: column !important;
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Portfolio / Gallery adjustments for mobile */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: 1fr; /* Single column on phones */
+        gap: 15px;
+    }
+
+    /* Ensure images and videos never overflow the screen */
+    img, video, iframe {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* Adjust padding and margins for smaller screens */
+    .container {
+        padding: 10px;
+        margin: 0;
+        width: 100%;
+    }
+
+    /* Adjust button sizes for touch screens */
+    .btn, button, input[type="submit"] {
+        padding: 12px 20px;
+        font-size: 16px; /* Larger text for easier tapping */
+        width: 100%;     /* Full width buttons on mobile are easier to tap */
+        margin-bottom: 10px;
+    }
+}
+/* Hero Section Video Background */
+.hero-section {
+    position: relative;
+    height: 100vh; /* Makes the section take up the full screen height */
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -76px; /* Adjust this value if your navbar height is different to pull the video behind a transparent navbar */
+}
+
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: -2;
+    object-fit: cover; /* Ensures the video covers the area without distorting */
+}
+
+/* Change the overlay background to transparent */
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent; /* Changed from rgba(0,0,0,0.5) */
+    z-index: -1;
+}
+
+/* Add text shadow to keep text readable against the bright video */
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); /* Adds a shadow behind the text */
+}
+
+/* Optional: Add a subtle shadow to the button text too */
+.hero-content .cta-button {
+    color: white;
+    border: 2px solid white;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 15px;
+    border-radius: 5px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Adds a shadow behind the button itself */
 }

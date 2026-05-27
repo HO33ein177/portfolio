@@ -5,6 +5,12 @@
 {% block content %}
 <!-- Home Section -->
 <section id="home" class="hero-section">
+    <!-- Background Video -->
+    <video autoplay loop muted playsinline class="hero-video">
+        <source src="{{ url_for('static', filename='videos/hero-background.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <h1 class="hero-title">Aura Capture</h1>
@@ -13,7 +19,8 @@
     </div>
 
 </section>
-<!-- Put this right below your Hero Section -->
+
+<!-- About Intro Section -->
 <section class="about-intro container my-5 py-5">
     <!-- Header Section -->
     <div class="row justify-content-center text-center mb-5">
@@ -31,15 +38,24 @@
 
             <p>I don’t just create content—I create visual experiences that make brands impossible to ignore.</p>
 
+            <!-- IMAGE 1 -->
+            <img src="{{ url_for('static', filename='images/index-img-1.jpeg') }}" alt="Creative Photography" class="img-fluid rounded my-4 mx-auto d-block shadow" style="max-height: 450px; width: auto; object-fit: cover;">
+
             <p>I work with brands, businesses, events, and creatives who want more than “just photos” or “just videos.” My approach is about building a strong visual identity that feels elevated, cinematic, modern, and emotionally connected to the audience.</p>
 
             <p>Every project I take on is approached with intention, creativity, and strategy. From photography and cinematic reels to creative direction, campaign concepts, social media visuals, and brand storytelling—I focus on creating content that not only looks beautiful, but actually helps your brand grow, attract attention, and stand out in a crowded digital world.</p>
+
+            <!-- IMAGE 2 -->
+            <img src="{{ url_for('static', filename='images/index-img-2.jpeg') }}" alt="Cinematic Direction" class="img-fluid rounded my-4 mx-auto d-block shadow" style="max-height: 450px; width: auto; object-fit: cover;">
 
             <p>What makes my work different is the way I blend aesthetics with emotion and strategy. I care deeply about creating visuals that feel authentic, premium, memorable, and powerful enough to stop people scrolling.</p>
 
             <p>I don’t like repetitive content or generic visuals. I’m constantly exploring fresh ideas, unique concepts, stronger storytelling, and new creative directions to make every brand feel distinctive and unforgettable.</p>
 
             <p>For brands looking for more than a one-time shoot, I also offer ongoing monthly creative partnerships including content planning, campaign ideas, reels, photography, video concepts, posting strategy, creative direction, and audience-focused content designed to build long-term growth and stronger brand presence.</p>
+
+            <!-- IMAGE 3 -->
+            <img src="{{ url_for('static', filename='images/index-img-3.jpeg') }}" alt="Brand Identity" class="img-fluid rounded my-4 mx-auto d-block shadow" style="max-height: 450px; width: auto; object-fit: cover;">
 
             <!-- Callout / Goal -->
             <div class="goal-box text-center my-5 py-4">
