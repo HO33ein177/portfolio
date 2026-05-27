@@ -92,7 +92,6 @@ section {
 }
 
 /* --- Home/Hero Section --- */
-/* --- Home/Hero Section --- */
 #home {
     height: calc(100vh - var(--nav-height));
     display: flex;
@@ -101,12 +100,9 @@ section {
     align-items: center;
     text-align: center;
     color: white;
-    padding: 0; /* Remove padding for full viewport height */
-
-    /* REMOVED the linear-gradient and background-image here */
+    padding: 0;
     background: transparent;
 }
-
 
 #home h1 {
     font-size: 4.5rem;
@@ -119,15 +115,68 @@ section {
     color: var(--secondary-text-color);
 }
 
+/* Hero Section Video Background */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -76px;
+}
+
+.hero-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    z-index: -2;
+    object-fit: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: -1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.hero-content .cta-button {
+    color: white;
+    border: 2px solid white;
+    padding: 10px 20px;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 15px;
+    border-radius: 5px;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
+}
+
 /* --- Introduction Section --- */
 #introduction {
     padding: 4rem 2rem;
-
-    /* NEW INTRODUCTION BACKGROUND */
     background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95)),
                 url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=2000&auto=format&fit=crop') no-repeat center center;
     background-size: cover;
-    background-attachment: fixed; /* Parallax effect */
+    background-attachment: fixed;
 }
 
 #introduction h2 {
@@ -335,12 +384,13 @@ hr {
 #about .about-content {
     display: flex;
     align-items: center;
-    justify-content: center; /* Centers the items horizontally */
+    justify-content: center;
     gap: 50px;
     max-width: 1000px;
-    margin: 0 auto; /* Centers the container block itself */
-    flex-wrap: wrap; /* Ensures it wraps nicely on smaller screens */
+    margin: 0 auto;
+    flex-wrap: wrap;
 }
+
 #about img {
     width: 300px;
     height: 300px;
@@ -348,33 +398,73 @@ hr {
     border-radius: 50%;
     border: 3px solid var(--accent-color);
 }
+
 #about p {
     color: var(--secondary-text-color);
     line-height: 1.8;
     max-width: 600px;
 }
 
-/* Remove purple default and style the link */
 #about a {
-    color: var(--accent-color); /* Uses your gold accent color */
+    color: var(--accent-color);
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
 }
+
 #about a:hover {
     color: var(--primary-text-color);
     text-decoration: underline;
+}
+
+.about-section {
+    padding: 100px 20px;
+    width: 100%;
+}
+
+.about-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 50px;
+}
+
+.about-image-column, .about-text-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.about-cta .btn-primary {
+    display: inline-block;
+    padding: 10px 24px;
+    background-color: transparent;
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.about-cta .btn-primary:hover {
+    background-color: var(--accent-color);
+    color: #000;
+    box-shadow: none;
 }
 
 /* --- Contact Section --- */
 .contact-info {
     text-align: center;
 }
+
 .contact-info p {
     font-size: 1.2rem;
     margin-bottom: 25px;
     color: var(--secondary-text-color);
 }
+
 .contact-links a {
     display: inline-block;
     margin: 0 15px;
@@ -384,6 +474,7 @@ hr {
     border-bottom: 1px solid transparent;
     transition: border-color 0.3s ease;
 }
+
 .contact-links a:hover {
     border-color: var(--accent-color);
 }
@@ -396,33 +487,14 @@ footer {
     color: var(--secondary-text-color);
 }
 
-/* --- Responsive Design for Mobile --- */
-@media (max-width: 768px) {
-    .nav-links { gap: 20px; }
-    #home h1 { font-size: 3rem; }
-    #about .about-content { flex-direction: column; text-align: center;}
-}
-
 /* =========================================
    THEME TOGGLE BUTTON & LIGHT MODE
    ========================================= */
 
-/* Light Mode Background for Hero Section */
 body.light-mode #home {
-    /* REMOVED the white linear-gradient so the video stays visible in light mode */
     background: transparent !important;
 }
 
-
-/* Light Mode Background for Hero Section */
-body.light-mode #home {
-    background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)),
-                url('https://images.unsplash.com/photo-1452587925148-ce544e77e70d?q=80&w=2000&auto=format&fit=crop') no-repeat center center;
-    background-size: cover;
-    background-attachment: fixed;
-}
-
-/* Light Mode Background for Introduction Section */
 body.light-mode #introduction {
     background: linear-gradient(rgba(248, 249, 250, 0.9), rgba(248, 249, 250, 0.95)),
                 url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?q=80&w=2000&auto=format&fit=crop') no-repeat center center;
@@ -432,35 +504,30 @@ body.light-mode #introduction {
     border-bottom: 1px solid #dee2e6;
 }
 
-/* Light Mode Navbar - Dark Frosted Glass */
 body.light-mode .navbar {
-    background-color: rgba(33, 37, 41, 0.85) !important; /* Deep charcoal with transparency */
+    background-color: rgba(33, 37, 41, 0.85) !important;
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* For Safari support */
+    -webkit-backdrop-filter: blur(10px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Ensure navbar links are visible against the dark glass */
 body.light-mode .navbar a,
 body.light-mode .navbar .logo {
     color: #ffffff !important;
 }
 
-/* Light Mode Footer - Dark Frosted Glass */
 body.light-mode footer {
-    background-color: rgba(33, 37, 41, 0.9) !important; /* Slightly more opaque dark charcoal */
+    background-color: rgba(33, 37, 41, 0.9) !important;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    color: #f8f9fa !important; /* Light text for readability */
-    border-top: none; /* Remove light borders */
+    color: #f8f9fa !important;
+    border-top: none;
 }
 
-/* Ensure footer links are also visible */
 body.light-mode footer a {
     color: #ffffff !important;
 }
 
-/* Theme Toggle Button Styles */
 .theme-toggle-btn {
     position: fixed;
     bottom: 30px;
@@ -486,113 +553,57 @@ body.light-mode footer a {
 }
 
 /* --- Light Mode Text Color Fixes --- */
-
-/* Fix for hero section text */
 .light-mode #home h1,
 .light-mode #home p {
     color: var(--primary-text-color);
 }
 
-/* Fix for paragraph text in the introduction section */
 .light-mode #introduction h2,
 .light-mode #introduction p,
 .light-mode .about-intro p {
     color: var(--secondary-text-color);
 }
 
-/* Fix for headings like "SEEN. FELT. REMEMBERED." */
 .light-mode .about-intro h2 {
     color: var(--secondary-text-color);
-    -webkit-text-stroke-width: 0; /* Also remove the text stroke */
+    -webkit-text-stroke-width: 0;
 }
 
 .light-mode .artist-name {
     color: var(--primary-text-color) !important;
 }
 
-/* Ensure the About section respects the Light Mode background and text colors */
-body.light-mode #about {
+body.light-mode #about,
+body.light-mode .about-section,
+body.light-mode .page-container {
     background-color: var(--bg-color) !important;
+    color: var(--primary-text-color);
 }
 
 body.light-mode #about h1,
 body.light-mode #about h2,
 body.light-mode #about h3,
-body.light-mode #about p {
+body.light-mode #about p,
+body.light-mode .about-title,
+body.light-mode .about-subtitle {
     color: var(--secondary-text-color) !important;
 }
 
-/* Ensure the specific titles get the primary dark color */
 body.light-mode #about h1,
 body.light-mode #about h2 {
     color: var(--primary-text-color) !important;
 }
 
 body.light-mode #about a {
-    color: #007bff; /* A nice blue for light mode, or keep the gold */
+    color: #007bff;
 }
 
 body.light-mode #about a:hover {
     color: #0056b3;
 }
-/* =========================================
-   ABOUT PAGE FIXES
-   ========================================= */
 
-/* 1. Center the content and fix the layout (fixes pushed-to-left issue) */
-.about-section {
-    padding: 100px 20px; /* Add some breathing room */
-    width: 100%;
-}
-
-.about-container {
-    display: flex;
-    flex-wrap: wrap; /* Allows stacking on mobile */
-    justify-content: center; /* Centers the inner columns */
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto; /* Centers the container itself */
-    gap: 50px;
-}
-
-.about-image-column, .about-text-column {
-    flex: 1;
-    min-width: 300px; /* Prevents columns from getting too skinny */
-}
-
-/* 2. Light mode background and text colors (fixes dark background issue) */
-body.light-mode .about-section,
-body.light-mode .page-container {
-    background-color: var(--bg-color);
-    color: var(--primary-text-color);
-}
-
-body.light-mode .about-title,
-body.light-mode .about-subtitle {
-    color: var(--primary-text-color);
-}
-
-/* 3. Fix the "Let's Connect" button (fixes lingering purple effect) */
-.about-cta .btn-primary {
-    display: inline-block;
-    padding: 10px 24px;
-    background-color: transparent;
-    color: var(--accent-color); /* Gold in dark mode */
-    border: 2px solid var(--accent-color);
-    border-radius: 5px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.about-cta .btn-primary:hover {
-    background-color: var(--accent-color);
-    color: #000; /* Dark text on gold hover */
-    box-shadow: none; /* Removes any lingering purple shadows */
-}
-
-/* Button Light Mode Override */
 body.light-mode .about-cta .btn-primary {
-    color: #000; /* Darker text for light mode */
+    color: #000;
     border-color: #000;
 }
 
@@ -600,16 +611,15 @@ body.light-mode .about-cta .btn-primary:hover {
     background-color: #000;
     color: #fff;
 }
+
 /* =========================================
    Mobile Responsiveness (Phones & Tablets)
    ========================================= */
 @media screen and (max-width: 768px) {
-    /* Adjust main body and text sizes */
     body {
         font-size: 14px;
     }
 
-    /* Make navigation stack or scroll horizontally */
     .nav-links {
         display: flex;
         flex-wrap: wrap;
@@ -622,7 +632,6 @@ body.light-mode .about-cta .btn-primary:hover {
         margin: 5px 0;
     }
 
-    /* Stack grid layouts (like About page or Contact) into single columns */
     .about-container,
     .contact-container,
     .main-container {
@@ -632,88 +641,35 @@ body.light-mode .about-cta .btn-primary:hover {
         box-sizing: border-box;
     }
 
-    /* Portfolio / Gallery adjustments for mobile */
     .gallery-grid {
-        display: grid;
-        grid-template-columns: 1fr; /* Single column on phones */
+        grid-template-columns: 1fr;
         gap: 15px;
     }
 
-    /* Ensure images and videos never overflow the screen */
     img, video, iframe {
         max-width: 100% !important;
         height: auto !important;
     }
 
-    /* Adjust padding and margins for smaller screens */
     .container {
         padding: 10px;
         margin: 0;
         width: 100%;
     }
 
-    /* Adjust button sizes for touch screens */
     .btn, button, input[type="submit"] {
         padding: 12px 20px;
-        font-size: 16px; /* Larger text for easier tapping */
-        width: 100%;     /* Full width buttons on mobile are easier to tap */
+        font-size: 16px;
+        width: 100%;
         margin-bottom: 10px;
     }
-}
-/* Hero Section Video Background */
-.hero-section {
-    position: relative;
-    height: 100vh; /* Makes the section take up the full screen height */
-    width: 100%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: -76px; /* Adjust this value if your navbar height is different to pull the video behind a transparent navbar */
-}
 
-.hero-video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    transform: translate(-50%, -50%);
-    z-index: -2;
-    object-fit: cover; /* Ensures the video covers the area without distorting */
-}
+    #home h1 {
+        font-size: 3rem;
+    }
 
-/* Change the overlay background to transparent */
-.hero-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: transparent; /* Changed from rgba(0,0,0,0.5) */
-    z-index: -1;
-}
-
-/* Add text shadow to keep text readable against the bright video */
-.hero-content {
-    position: relative;
-    z-index: 1;
-    text-align: center;
-    color: white;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8); /* Adds a shadow behind the text */
-}
-
-/* Optional: Add a subtle shadow to the button text too */
-.hero-content .cta-button {
-    color: white;
-    border: 2px solid white;
-    padding: 10px 20px;
-    text-decoration: none;
-    display: inline-block;
-    margin-top: 15px;
-    border-radius: 5px;
-    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.8);
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Adds a shadow behind the button itself */
+    #about .about-content {
+        flex-direction: column;
+        text-align: center;
+    }
 }
