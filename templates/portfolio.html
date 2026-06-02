@@ -2,7 +2,38 @@
 
 {% block content %}
 <style>
-    /* CSS Grid to put items in a row */
+    /* --- NEW: CSS for Static Top Previews --- */
+    .previews-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .preview-category-title {
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 20px;
+        font-size: 1.5rem;
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+    }
+
+    .preview-images-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin-bottom: 60px; /* Space between categories */
+    }
+
+    .preview-image {
+        width: 100%;
+        height: 400px; /* Larger height for static previews */
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    /* --- ORIGINAL: CSS for Category Cards Grid --- */
     .portfolio-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -58,6 +89,27 @@
     }
 </style>
 
+<div class="preview-images-grid">
+    {% for category, image_paths in category_previews.items() %}
+        <div class="preview-category-section">
+            <h2 class="preview-category-title">{{ category }}</h2>
+            {% if intros and intros[category] %}
+                <p class="preview-category-intro">{{ intros[category] }}</p>
+            {% endif %}
+
+            <div class="preview-images-wrapper">
+                {% for img_path in image_paths %}
+                    <div class="preview-image-card">
+                        <!-- Added onclick event here -->
+                        <img src="{{ url_for('static', filename=img_path) }}" alt="{{ category }} preview" onclick="openLightbox(this.src)">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- ORIGINAL: Interactive Category Cards Grid -->
 <div class="portfolio-grid">
     {% for category_name, item in categories.items() %}
     <a href="{{ url_for('portfolio_category', category_name=category_name) }}" class="category-card">
@@ -75,4 +127,31 @@
     </a>
     {% endfor %}
 </div>
+<div id="lightboxModal" class="lightbox-modal" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightboxImage">
+</div>
+
+<script>
+    function openLightbox(imageSrc) {
+        var modal = document.getElementById("lightboxModal");
+        var modalImg = document.getElementById("lightboxImage");
+        modal.style.display = "block";
+        modalImg.src = imageSrc;
+        document.body.style.overflow = "hidden"; // Prevent background scrolling
+    }
+
+    function closeLightbox() {
+        var modal = document.getElementById("lightboxModal");
+        modal.style.display = "none";
+        document.body.style.overflow = "auto"; // Re-enable background scrolling
+    }
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape") {
+            closeLightbox();
+        }
+    });
+</script>
 {% endblock %}

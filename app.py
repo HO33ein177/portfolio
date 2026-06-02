@@ -48,32 +48,56 @@ def home():
     """Renders the home/landing page."""
     return render_template('index.html', active_page='home')
 
-# Add introductions for your categories
+
 category_intros = {
     'Product': 'Showcasing products with clarity and creative lighting.',
     'Lifestyle': 'Capturing authentic moments and natural storytelling.',
     'Branding': 'Elevating your brand identity through professional imagery.',
     'Event': 'Documenting the atmosphere and key moments of your special events.',
-    'Sports': 'Action-packed sports photography capturing peak performance.'
+    'Sports': 'Action-packed sports photography capturing peak performance.',
+    'Fashion': 'Highlighting style, apparel, and trends with striking editorial and commercial photography.',
+    'Architecture': 'Capturing the design, structure, and aesthetic beauty of interior and exterior spaces.',
+    'Content': 'Creating engaging, high-quality visual content tailored for social media and digital platforms.',
+    'Food': 'Mouth-watering culinary photography that emphasizes texture, color, and beautiful presentation.',
+    'Industrial': 'Showcasing the scale, processes, and technology of manufacturing and industrial environments.'
 }
 
+
+# Add this dictionary near your category_intros
+manual_category_previews = {
+    'Product': ['images/img-product-1.jpeg', 'images/img-product-2.jpeg'],
+    'Lifestyle': ['images/img-lifestyle-1.jpeg', 'images/img-lifestyle-2.jpeg'],
+    'Branding': ['images/img-branding-1.jpeg', 'images/img-branding-2.jpeg'],
+    'Event': ['images/img-event-1.jpeg', 'images/img-event-2.jpeg'],
+    'Sports': ['images/img-sport-1.jpeg', 'images/img-sport-2.jpeg'],
+    'Fashion': ['images/img-fashion-1.jpeg', 'images/img-fashion-2.jpeg'],
+    'Architecture': ['images/img-arch-1.jpeg', 'images/img-arch-2.jpeg'],
+    'Content': ['images/img-content-1.jpeg', 'images/img-content-2.jpeg'],
+    'Food': ['images/img-food-1.jpeg', 'images/img-food-2.jpeg'],
+    'Industrial': ['images/img-industrial-1.jpeg', 'images/img-industrial-2.jpeg']
+}
 
 
 @app.route('/portfolio')
 def portfolio():
-    # Get all items
+    # Get all items, newest first
     items = PortfolioItem.query.order_by(desc(PortfolioItem.id)).all()
 
-    # Create a dictionary to hold one representative item for each category
     categories = {}
+
+    # Only calculate the categories for the interactive bottom grid
     for item in items:
         if item.category not in categories:
             categories[item.category] = item
 
-    # Pass 'intros=category_introductions' here!
-    return render_template('portfolio.html', categories=categories, intros=category_intros, active_page='portfolio')
-
-
+    # Pass manual_category_previews to the template instead of calculating it
+    return render_template(
+        'portfolio.html',
+        categories=categories,
+        category_previews=manual_category_previews,
+        intros=category_intros,
+        active_page='portfolio'
+    )
 
 
 @app.route('/portfolio/<category_name>')
