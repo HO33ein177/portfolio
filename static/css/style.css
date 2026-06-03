@@ -816,3 +816,62 @@ body.light-mode .contact-section {
     from {transform: scale(0.8); opacity: 0;}
     to {transform: scale(1); opacity: 1;}
 }
+.preview-category-intro {
+    font-weight: bold;         /* Bolds the description text */
+    margin-bottom: 30px;       /* Increases the space below the description */
+    /* Add any other existing properties you might have for this class below */
+}
+/* ---------------------------------------------------
+   Portfolio Transition Section (Dark Theme & Stretched)
+------------------------------------------------------ */
+.portfolio-transition-section {
+    text-align: center;
+    margin: 60px auto 50px auto;
+    padding: 50px 30px;
+    max-width: 800px;
+
+    /* Dark background to match the theme */
+    background-color: #1a1a1a;
+
+    /* Replaced simple top/bottom borders with a clean boxed look */
+    border: 1px solid #333;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.transition-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #ffffff;
+
+    /* Stretches the characters slightly */
+    letter-spacing: 2px;
+}
+
+.transition-text {
+    font-size: 1.2rem;
+    color: #c4c4c4;
+
+    /* Stretches the vertical space between lines */
+    line-height: 2;
+
+    /* Stretches the characters slightly for an elegant look */
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+/* Smooth transition for all preview images */
+.preview-images-grid img {
+    transition: transform 0.3s ease, z-index 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+/* The expanded state */
+.preview-images-grid img.expanded {
+    transform: scale(1.8); /* Adjust the number to make it bigger/smaller */
+    z-index: 50; /* Ensures the expanded image stays on top of other elements */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+}

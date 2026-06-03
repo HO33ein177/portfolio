@@ -2,38 +2,177 @@
 
 {% block content %}
 <style>
-    /* --- NEW: CSS for Static Top Previews --- */
+    /* --- CSS for Static Top Previews (Accordion Style) --- */
     .previews-container {
         max-width: 1200px;
         margin: 40px auto;
         padding: 0 20px;
     }
 
+    .preview-category-section {
+        margin-bottom: 15px;
+    }
+
+    /* Clickable Title styling */
     .preview-category-title {
         color: #fff;
         text-transform: uppercase;
         letter-spacing: 2px;
-        margin-bottom: 20px;
+        margin-bottom: 0;
         font-size: 1.5rem;
         border-bottom: 1px solid #333;
-        padding-bottom: 10px;
+        padding-bottom: 15px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: color 0.3s ease;
+    }
+
+    .preview-category-title:hover {
+        color: #aaa;
+    }
+
+    /* Plus/Minus Icon for the dropdown indicator */
+    .preview-category-title::after {
+        content: '+';
+        font-size: 1.8rem;
+        font-weight: 300;
+        transition: transform 0.3s ease;
+    }
+
+    .preview-category-title.active::after {
+        content: '−';
+        transform: rotate(180deg);
+    }
+
+    /* Accordion wrapper using CSS Grid */
+    .preview-content-wrapper {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.4s ease-out;
+    }
+
+    .preview-content-wrapper.open {
+        grid-template-rows: 1fr;
+    }
+
+    .preview-content {
+        overflow: hidden;
+    }
+
+    .preview-content-inner {
+        padding-top: 20px;
+        padding-bottom: 40px;
+    }
+
+    .preview-category-intro {
+        color: #ccc;
+        margin-bottom: 25px;
+        line-height: 1.6;
+        font-size: 1.05rem;
     }
 
     .preview-images-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 20px;
-        margin-bottom: 60px; /* Space between categories */
     }
 
+    /* Base styles for the image */
     .preview-image {
         width: 100%;
-        height: 400px; /* Larger height for static previews */
+        height: 400px;
         object-fit: cover;
+        border-radius: 8px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+    .preview-image:hover {
+        transform: scale(1.02);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+
+    /* --- Lightbox Modal Styles --- */
+    .lightbox-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        padding-top: 50px;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .lightbox-modal.show {
+        opacity: 1;
+    }
+
+    .lightbox-content {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 85vh;
+        object-fit: contain;
+        transform: scale(0.8);
+        transition: transform 0.3s ease;
+    }
+
+    .lightbox-modal.show .lightbox-content {
+        transform: scale(1);
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 20px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        transition: 0.3s;
+        cursor: pointer;
+    }
+
+    .lightbox-close:hover,
+    .lightbox-close:focus {
+        color: #bbb;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    /* --- Engaging Transition Section --- */
+    .portfolio-transition-section {
+        background-color: #1a1a1a;
+        text-align: center;
+        padding: 50px 20px;
+        margin: 60px auto;
+        max-width: 1200px;
         border-radius: 8px;
     }
 
-    /* --- ORIGINAL: CSS for Category Cards Grid --- */
+    .transition-title {
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-bottom: 15px;
+    }
+
+    .transition-text {
+        color: #aaa;
+        line-height: 2;
+        letter-spacing: 1px;
+        font-size: 1.1rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    /* --- CSS for Category Cards Grid --- */
     .portfolio-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -60,8 +199,8 @@
 
     .category-image {
         width: 100%;
-        height: 250px; /* Fixed height */
-        object-fit: cover; /* Prevents stretching, crops proportionally */
+        height: 250px;
+        object-fit: cover;
     }
 
     .category-info {
@@ -76,7 +215,6 @@
         color: #fff;
     }
 
-    /* Limits the intro text to exactly 2 lines */
     .category-intro {
         color: #aaa;
         font-size: 0.9rem;
@@ -89,37 +227,48 @@
     }
 </style>
 
-<div class="preview-images-grid">
+<div class="previews-container">
     {% for category, image_paths in category_previews.items() %}
         <div class="preview-category-section">
             <h2 class="preview-category-title">{{ category }}</h2>
-            {% if intros and intros[category] %}
-                <p class="preview-category-intro">{{ intros[category] }}</p>
-            {% endif %}
 
-            <div class="preview-images-wrapper">
-                {% for img_path in image_paths %}
-                    <div class="preview-image-card">
-                        <!-- Added onclick event here -->
-                        <img src="{{ url_for('static', filename=img_path) }}" alt="{{ category }} preview" onclick="openLightbox(this.src)">
+            <div class="preview-content-wrapper">
+                <div class="preview-content">
+                    <div class="preview-content-inner">
+                        {% if intros and intros[category] %}
+                            <p class="preview-category-intro">{{ intros[category] }}</p>
+                        {% endif %}
+
+                        <div class="preview-images-grid">
+                            {% for img_path in image_paths %}
+                                <div class="preview-image-card">
+                                    <img class="preview-image" src="{{ url_for('static', filename=img_path) }}" alt="{{ category }} preview">
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                {% endfor %}
+                </div>
             </div>
         </div>
     {% endfor %}
 </div>
 
-<!-- ORIGINAL: Interactive Category Cards Grid -->
+<!-- Stylized Transition Section -->
+<div class="portfolio-transition-section">
+    <h3 class="transition-title">Ready to see more?</h3>
+    <p class="transition-text">
+        The images above are just a glimpse of what we do. Dive deeper into our complete collection below!
+    </p>
+</div>
+
+<!-- Interactive Category Cards Grid -->
 <div class="portfolio-grid">
     {% for category_name, item in categories.items() %}
     <a href="{{ url_for('portfolio_category', category_name=category_name) }}" class="category-card">
-        <!-- Cover Image -->
         <img src="{{ url_for('static', filename='uploads/' + item.filename) }}" alt="{{ category_name }}" class="category-image">
 
         <div class="category-info">
             <h3>{{ category_name | upper }}</h3>
-
-            <!-- Intro Text -->
             {% if intros and category_name in intros %}
                 <p class="category-intro">{{ intros[category_name] }}</p>
             {% endif %}
@@ -127,31 +276,69 @@
     </a>
     {% endfor %}
 </div>
-<div id="lightboxModal" class="lightbox-modal" onclick="closeLightbox()">
+
+<!-- Lightbox Modal Container -->
+<div id="imageLightbox" class="lightbox-modal">
     <span class="lightbox-close">&times;</span>
-    <img class="lightbox-content" id="lightboxImage">
+    <img class="lightbox-content" id="lightboxImg">
 </div>
 
 <script>
-    function openLightbox(imageSrc) {
-        var modal = document.getElementById("lightboxModal");
-        var modalImg = document.getElementById("lightboxImage");
-        modal.style.display = "block";
-        modalImg.src = imageSrc;
-        document.body.style.overflow = "hidden"; // Prevent background scrolling
-    }
+    document.addEventListener("DOMContentLoaded", function() {
+        // --- Accordion Logic for Titles ---
+        const categoryTitles = document.querySelectorAll(".preview-category-title");
 
-    function closeLightbox() {
-        var modal = document.getElementById("lightboxModal");
-        modal.style.display = "none";
-        document.body.style.overflow = "auto"; // Re-enable background scrolling
-    }
+        categoryTitles.forEach(title => {
+            title.addEventListener("click", function() {
+                this.classList.toggle("active");
+                const contentWrapper = this.nextElementSibling;
+                contentWrapper.classList.toggle("open");
+            });
+        });
 
-    // Close on Escape key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === "Escape") {
-            closeLightbox();
-        }
+        // --- Lightbox Modal Logic ---
+        const modal = document.getElementById("imageLightbox");
+        const modalImg = document.getElementById("lightboxImg");
+        const closeBtn = document.querySelector(".lightbox-close");
+        const previewImages = document.querySelectorAll(".preview-image");
+
+        // Open lightbox
+        previewImages.forEach(img => {
+            img.addEventListener("click", function() {
+                modal.style.display = "block";
+                // Slight delay to allow display:block to apply before adding the opacity/transform class for animation
+                setTimeout(() => {
+                    modal.classList.add("show");
+                }, 10);
+                modalImg.src = this.src;
+            });
+        });
+
+        // Close lightbox function
+        const closeLightbox = () => {
+            modal.classList.remove("show");
+            setTimeout(() => {
+                modal.style.display = "none";
+                modalImg.src = "";
+            }, 300); // Wait for transition to finish
+        };
+
+        // Close via 'x' button
+        closeBtn.addEventListener("click", closeLightbox);
+
+        // Close by clicking outside the image
+        modal.addEventListener("click", function(e) {
+            if (e.target === modal) {
+                closeLightbox();
+            }
+        });
+
+        // Close via Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape" && modal.style.display === "block") {
+                closeLightbox();
+            }
+        });
     });
 </script>
 {% endblock %}
