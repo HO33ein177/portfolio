@@ -3,17 +3,309 @@
 {% block title %}Aura Capture | Contact{% endblock %}
 
 {% block content %}
-<section id="contact" style="background-color: #1a1a1a;">
-    <div class="container">
-        <h2 class="section-title">Get In Touch</h2>
-        <div class="contact-info">
-            <p>Ready to create something beautiful? Let's talk.</p>
-            <div class="contact-links">
-                <a href="mailto:Farnazkalanii@gmail.com">Farnazkalanii@gmail.com</a>
-                <a href="tel:0491947890">0491 947 890</a>
-                <a href="https://www.instagram.com/far.nazkalani" target="_blank">Instagram</a>
+<style>
+    .contact-page {
+        background: linear-gradient(135deg, #0a0a0a 0%, #141414 100%);
+        min-height: calc(100vh - 70px);
+        padding: 80px 20px;
+    }
+
+    .contact-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+    }
+
+    /* Left Column - Contact Info */
+    .contact-info-card {
+        background: rgba(20, 20, 20, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 28px;
+        padding: 40px;
+        border: 1px solid #2a2a2a;
+        transition: transform 0.3s;
+    }
+
+    .contact-info-card:hover {
+        transform: translateY(-5px);
+        border-color: #c5a059;
+    }
+
+    .contact-info-title {
+        font-size: 2rem;
+        font-weight: 300;
+        color: #fff;
+        margin-bottom: 15px;
+        border-left: 4px solid #c5a059;
+        padding-left: 20px;
+    }
+
+    .contact-info-sub {
+        color: #aaa;
+        margin-bottom: 35px;
+        line-height: 1.6;
+    }
+
+    .contact-details-list {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+        margin-bottom: 40px;
+    }
+
+    .contact-detail-item {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .contact-detail-icon {
+        width: 50px;
+        height: 50px;
+        background: #1e1e1e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        border: 1px solid #333;
+    }
+
+    .contact-detail-text {
+        flex: 1;
+    }
+
+    .contact-detail-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+    }
+
+    .contact-detail-value {
+        font-size: 1.1rem;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .contact-detail-value a {
+        color: #fff;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .contact-detail-value a:hover {
+        color: #c5a059;
+    }
+
+    .social-icons {
+        display: flex;
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .social-icon {
+        width: 45px;
+        height: 45px;
+        background: #1e1e1e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        transition: all 0.3s;
+        text-decoration: none;
+        color: #e0e0e0;
+        border: 1px solid #333;
+    }
+
+    .social-icon:hover {
+        background: #c5a059;
+        color: #0a0a0a;
+        transform: scale(1.1);
+        border-color: #c5a059;
+    }
+
+    /* Right Column - Contact Form */
+    .contact-form-card {
+        background: rgba(20, 20, 20, 0.8);
+        backdrop-filter: blur(10px);
+        border-radius: 28px;
+        padding: 40px;
+        border: 1px solid #2a2a2a;
+        transition: transform 0.3s;
+    }
+
+    .contact-form-card:hover {
+        border-color: #c5a059;
+    }
+
+    .form-title {
+        font-size: 1.8rem;
+        font-weight: 300;
+        margin-bottom: 10px;
+        color: #fff;
+    }
+
+    .form-sub {
+        color: #aaa;
+        margin-bottom: 30px;
+        font-size: 0.9rem;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 14px 18px;
+        background: #1e1e1e;
+        border: 1px solid #333;
+        border-radius: 16px;
+        color: #fff;
+        font-size: 1rem;
+        transition: all 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #c5a059;
+        box-shadow: 0 0 0 2px rgba(197,160,89,0.2);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .btn-submit {
+        background: transparent;
+        border: 2px solid #c5a059;
+        color: #c5a059;
+        padding: 12px 30px;
+        border-radius: 40px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        width: 100%;
+        font-size: 1rem;
+    }
+
+    .btn-submit:hover {
+        background: #c5a059;
+        color: #0a0a0a;
+        transform: translateY(-2px);
+    }
+
+    .flash-messages-contact {
+        margin-bottom: 25px;
+    }
+
+    .flash-success {
+        background: #1e2a1e;
+        border-left: 4px solid #6b8c42;
+        padding: 12px 18px;
+        border-radius: 12px;
+        color: #c0e0b0;
+    }
+
+    .flash-danger {
+        background: #2a1e1e;
+        border-left: 4px solid #b33;
+        padding: 12px 18px;
+        border-radius: 12px;
+        color: #e0b0b0;
+    }
+
+    @media (max-width: 900px) {
+        .contact-grid {
+            grid-template-columns: 1fr;
+            gap: 35px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .contact-info-card, .contact-form-card {
+            padding: 25px;
+        }
+        .contact-info-title {
+            font-size: 1.6rem;
+        }
+    }
+</style>
+
+<div class="contact-page">
+    <div class="contact-grid">
+        <!-- LEFT COLUMN: Contact Details -->
+        <div class="contact-info-card">
+            <h2 class="contact-info-title">Let's Connect</h2>
+            <p class="contact-info-sub">Have a project in mind or just want to say hello? I’d love to hear from you.</p>
+
+            <div class="contact-details-list">
+                <div class="contact-detail-item">
+                    <div class="contact-detail-icon">📧</div>
+                    <div class="contact-detail-text">
+                        <div class="contact-detail-label">EMAIL</div>
+                        <div class="contact-detail-value"><a href="mailto:Farnazkalanii@gmail.com">Farnazkalanii@gmail.com</a></div>
+                    </div>
+                </div>
+                <div class="contact-detail-item">
+                    <div class="contact-detail-icon">📞</div>
+                    <div class="contact-detail-text">
+                        <div class="contact-detail-label">PHONE</div>
+                        <div class="contact-detail-value"><a href="tel:0491947890">0491 947 890</a></div>
+                    </div>
+                </div>
+                <div class="contact-detail-item">
+                    <div class="contact-detail-icon">📍</div>
+                    <div class="contact-detail-text">
+                        <div class="contact-detail-label">LOCATION</div>
+                        <div class="contact-detail-value">Sydney, Australia</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="social-icons">
+                <a href="https://www.instagram.com/far.nazkalani" target="_blank" class="social-icon">📷</a>
+                <!-- Add more social icons as needed -->
+                <a href="#" class="social-icon">🐦</a>
+                <a href="#" class="social-icon">🎬</a>
             </div>
         </div>
+
+        <!-- RIGHT COLUMN: Contact Form -->
+        <div class="contact-form-card">
+            <h2 class="form-title">Send a Message</h2>
+            <p class="form-sub">I'll get back to you within 24 hours.</p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-contact">
+                        {% for category, message in messages %}
+                            <div class="flash-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('send_message') }}" method="POST">
+                <div class="form-group">
+                    <input type="text" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="form-group">
+                    <textarea name="message" placeholder="Tell me about your project..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Send Message →</button>
+            </form>
+        </div>
     </div>
-</section>
+</div>
 {% endblock %}

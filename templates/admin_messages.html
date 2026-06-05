@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin – Messages | Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            padding: 40px 20px;
+            color: #e0e0e0;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .admin-header h1 {
+            font-size: 1.8rem;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: #fff;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: #555;
+            color: #ccc;
+        }
+
+        .btn-outline:hover {
+            background: #2a2a2a;
+            border-color: #888;
+        }
+
+        .btn-danger {
+            background: #b33;
+            border-color: #b33;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #a22;
+        }
+
+        .flash-messages {
+            background: #1e2a1e;
+            border-left: 4px solid #6b8c42;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            color: #c0e0b0;
+        }
+
+        .messages-grid {
+            display: grid;
+            gap: 20px;
+        }
+
+        .message-card {
+            background: #141414;
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
+            padding: 20px;
+            transition: border-color 0.2s;
+        }
+
+        .message-card:hover {
+            border-color: #c5a059;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .message-sender {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .message-sender span {
+            color: #c5a059;
+            font-weight: normal;
+        }
+
+        .message-date {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .message-email {
+            font-size: 0.85rem;
+            color: #aaa;
+            margin-bottom: 12px;
+        }
+
+        .message-content {
+            background: #1a1a1a;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+            line-height: 1.6;
+            color: #ddd;
+        }
+
+        .delete-form {
+            text-align: right;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: #141414;
+            border-radius: 16px;
+            color: #888;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 20px 15px;
+            }
+            .admin-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .message-header {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Contact Messages</h1>
+        <div class="nav-buttons">
+            <a href="{{ url_for('admin') }}" class="btn btn-outline">← Image Manager</a>
+            <a href="{{ url_for('admin_videos') }}" class="btn btn-outline">Video Manager</a>
+            <a href="{{ url_for('home') }}" class="btn btn-outline">View Site</a>
+            <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if messages %}
+        <div class="messages-grid">
+            {% for msg in messages %}
+            <div class="message-card">
+                <div class="message-header">
+                    <div class="message-sender">
+                        {{ msg.name }} <span>wrote:</span>
+                    </div>
+                    <div class="message-date">
+                        {{ msg.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                    </div>
+                </div>
+                <div class="message-email">
+                    📧 {{ msg.email }}
+                </div>
+                <div class="message-content">
+                    {{ msg.message | nl2br }}
+                </div>
+                <div class="delete-form">
+                    <form action="{{ url_for('delete_message', msg_id=msg.id) }}" method="POST" onsubmit="return confirm('Delete this message from {{ msg.name }}?')">
+                        <button type="submit" class="btn btn-danger" style="padding: 5px 15px;">Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>📭 No messages yet. When someone submits the contact form, it will appear here.</p>
+        </div>
+    {% endif %}
+</div>
+</body>
+</html>

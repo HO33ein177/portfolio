@@ -1,41 +1,168 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="page-container">
-  <section id="about" class="about-section">
-    <div class="about-container">
+<style>
+    .about-page {
+        background: linear-gradient(135deg, #0a0a0a 0%, #141414 100%);
+        min-height: calc(100vh - 70px);
+        padding: 80px 20px;
+    }
 
-      <!-- ===== LEFT COLUMN - IMAGE ===== -->
-      <div class="about-image-column">
-        <img src="{{ url_for('static', filename='images/profile-picture.jpeg') }}" alt="A professional photo of [Your Name]" class="profile-picture">
-      </div>
+    .about-container-modern {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 60px;
+        align-items: center;
+    }
 
-      <!-- ===== RIGHT COLUMN - TEXT CONTENT ===== -->
-            <!-- ===== RIGHT COLUMN - TEXT CONTENT ===== -->
-      <div class="about-text-column">
-        <h1 class="about-title">About Me</h1>
-        <h3 class="about-subtitle">Visual storyteller blending light, motion & emotion.</h3>
+    /* Left Column: Image */
+    .about-image-modern {
+        flex: 1;
+        min-width: 280px;
+        text-align: center;
+    }
 
-        <div class="about-skills">
-          <span>📸 Photography</span>
-          <span>🎥 Videography</span>
-          <span>💡 Digital Creator</span>
+    .profile-picture-modern {
+        width: 100%;
+        max-width: 400px;
+        border-radius: 20px;
+        box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+        border: 2px solid #c5a059;
+        transition: transform 0.3s ease, box-shadow 0.3s;
+    }
+
+    .profile-picture-modern:hover {
+        transform: scale(1.02);
+        box-shadow: 0 25px 40px rgba(197,160,89,0.2);
+    }
+
+    /* Right Column: Text */
+    .about-text-modern {
+        flex: 1.5;
+        min-width: 280px;
+    }
+
+    .about-title-modern {
+        font-size: 3rem;
+        font-weight: 300;
+        letter-spacing: 2px;
+        color: #fff;
+        margin-bottom: 15px;
+        border-left: 4px solid #c5a059;
+        padding-left: 20px;
+    }
+
+    .about-subtitle-modern {
+        font-size: 1.2rem;
+        color: #c5a059;
+        font-weight: 400;
+        margin-bottom: 25px;
+        font-style: italic;
+    }
+
+    .skills-modern {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .skill-badge {
+        background: #1e1e1e;
+        padding: 6px 16px;
+        border-radius: 40px;
+        font-size: 0.85rem;
+        color: #ddd;
+        border: 1px solid #333;
+        transition: all 0.2s;
+    }
+
+    .skill-badge:hover {
+        border-color: #c5a059;
+        color: #c5a059;
+    }
+
+    .about-description-modern p {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+
+    .about-description-modern strong {
+        color: #c5a059;
+        font-weight: 500;
+    }
+
+    .about-cta-modern {
+        margin-top: 35px;
+    }
+
+    .btn-primary-modern {
+        display: inline-block;
+        background: transparent;
+        border: 2px solid #c5a059;
+        color: #c5a059;
+        padding: 12px 28px;
+        border-radius: 40px;
+        text-decoration: none;
+        font-weight: 600;
+        letter-spacing: 1px;
+        transition: all 0.3s;
+    }
+
+    .btn-primary-modern:hover {
+        background: #c5a059;
+        color: #0a0a0a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(197,160,89,0.3);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .about-page {
+            padding: 50px 20px;
+        }
+        .about-container-modern {
+            flex-direction: column;
+            gap: 40px;
+        }
+        .about-title-modern {
+            font-size: 2.2rem;
+        }
+        .profile-picture-modern {
+            max-width: 280px;
+        }
+    }
+</style>
+
+<div class="about-page">
+    <div class="about-container-modern">
+        <div class="about-image-modern">
+            <img src="{{ url_for('static', filename='images/profile-picture.jpeg') }}" alt="Farnaz Kalani" class="profile-picture-modern">
         </div>
+        <div class="about-text-modern">
+            <h1 class="about-title-modern">About Me</h1>
+            <h3 class="about-subtitle-modern">Visual storyteller blending light, motion & emotion.</h3>
 
-        <div class="about-description">
-          <p>I’m Farnaz, a Sydney-based photographer with a passion for storytelling. I first picked up a camera out of a desire to capture the world as I see it—to freeze the magic of a moment and find the beauty in the details.</p>
+            <div class="skills-modern">
+                <span class="skill-badge">📸 Photography</span>
+                <span class="skill-badge">🎥 Videography</span>
+                <span class="skill-badge">💡 Digital Creator</span>
+            </div>
 
-          <p>That desire has grown into a career dedicated to crafting authentic visual stories. My work is diverse, spanning the clean, precise world of <strong>Product and Branding Photography</strong>, the vibrant energy of <strong>Events and Sports</strong>, and the candid moments of <strong>Lifestyle Photography</strong>.</p>
+            <div class="about-description-modern">
+                <p>I’m <strong>Farnaz</strong>, a Sydney-based photographer with a passion for storytelling. I first picked up a camera out of a desire to capture the world as I see it—to freeze the magic of a moment and find the beauty in the details.</p>
+                <p>That desire has grown into a career dedicated to crafting authentic visual stories. My work is diverse, spanning the clean, precise world of <strong>Product and Branding Photography</strong>, the vibrant energy of <strong>Events and Sports</strong>, and the candid moments of <strong>Lifestyle Photography</strong>.</p>
+                <p>For me, every project is a new story waiting to be told. When I’m not on a shoot, I love hiking coastal trails at sunrise, experimenting with old film cameras, or simply getting lost in the city and documenting everyday life.</p>
+            </div>
 
-          <p>For me, every project is a new story waiting to be told. When I’m not on a shoot, I love hiking coastal trails at sunrise, experimenting with old film cameras, or simply getting lost in the city and documenting everyday life.</p>
+            <div class="about-cta-modern">
+                <a href="{{ url_for('contact') }}" class="btn-primary-modern">Let's Connect →</a>
+            </div>
         </div>
-
-        <div class="about-cta">
-          <a href="{{ url_for('contact') }}" class="btn btn-primary">Let's Connect</a>
-        </div>
-      </div>
-
     </div>
-  </section>
 </div>
 {% endblock %}

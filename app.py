@@ -42,12 +42,21 @@ class Video(db.Model):
     title = db.Column(db.String(100), nullable=False)
     filename = db.Column(db.String(100), nullable=False)
 
+class ContactMessage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(150), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
+@app.template_filter('nl2br')
+def nl2br_filter(s):
+    return s.replace('\n', '<br>')
 # --- Public Facing Routes ---
 
 @app.route('/')
@@ -299,6 +308,40 @@ def delete_video(video_id):
     flash('Video deleted successfully!', 'success')
     return redirect(url_for('admin_videos'))
 
+
+@app.route('/send_message', methods=['POST'])
+def send_message():
+    name = request.form['name']
+    email = request.form['email']
+    message = request.form['message']
+    print(f"Saving message from {name} ({email})")  # debug
+
+    if not name or not email or not message:
+        flash('Please fill all fields.', 'danger')
+        return redirect(url_for('contact'))
+
+    new_msg = ContactMessage(name=name, email=email, message=message)
+    db.session.add(new_msg)
+    db.session.commit()
+    print("Message saved, ID:", new_msg.id)  # debug
+
+    flash('Thank you! Your message has been sent.', 'success')
+    return redirect(url_for('contact'))
+
+@app.route('/admin/messages')
+@login_required
+def admin_messages():
+    messages = ContactMessage.query.order_by(desc(ContactMessage.created_at)).all()
+    return render_template('admin_messages.html', messages=messages)
+
+@app.route('/delete_message/<int:msg_id>', methods=['POST'])
+@login_required
+def delete_message(msg_id):
+    msg = ContactMessage.query.get_or_404(msg_id)
+    db.session.delete(msg)
+    db.session.commit()
+    flash('Message deleted successfully.', 'success')
+    return redirect(url_for('admin_messages'))
 
 # --- Main Execution ---
 if __name__ == '__main__':
