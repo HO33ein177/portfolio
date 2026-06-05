@@ -875,3 +875,60 @@ body.light-mode .contact-section {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     border-radius: 8px;
 }
+.contact-links {
+    display: flex;
+    flex-direction: column; /* Stacks the links vertically on mobile */
+    align-items: center;    /* Centers the links */
+    gap: 15px;              /* Adds space between the links */
+    margin-top: 20px;
+}
+
+/* Optional: If you want them side-by-side on larger screens */
+@media (min-width: 768px) {
+    .contact-links {
+        flex-direction: row;
+        justify-content: center;
+        gap: 30px;
+    }
+}
+/* About Text & Typography Enhancements */
+.about-subtitle {
+    font-size: 1.25rem;
+    font-weight: 400;
+    margin-bottom: 15px;
+    color: #b3b3b3; /* Soft grey */
+}
+
+.about-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.about-skills span {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #ffffff;
+    border-bottom: 1px solid #555;
+    padding-bottom: 4px;
+}
+
+.about-description p {
+    font-size: 1.05rem;
+    line-height: 1.8; /* Adds breathing room between lines */
+    margin-bottom: 20px;
+    color: #cccccc;
+    font-weight: 300; /* Lighter font weight for modern look */
+}
+
+.about-description strong {
+    font-weight: 500;
+    color: #ffffff; /* Highlights the specialties in bright white */
+}
+
+.about-cta {
+    margin-top: 40px;
+}

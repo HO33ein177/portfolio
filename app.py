@@ -62,8 +62,20 @@ category_intros = {
     'Industrial': 'Showcasing the scale, processes, and technology of manufacturing and industrial environments.'
 }
 
+# Map form values → stored category name (must match manual_category_previews keys)
+category_name_map = {
+    'product': 'Product',
+    'lifestyle': 'Lifestyle',
+    'branding': 'Branding',
+    'event': 'Event',
+    'sport': 'Sports',          # note: plural!
+    'food': 'Food',
+    'fashion': 'Fashion',
+    'industrial': 'Industrial',
+    'architecture': 'Architecture',
+    'content': 'Content'
+}
 
-# Add this dictionary near your category_intros
 manual_category_previews = {
     'Product': ['images/img-product-1.jpeg', 'images/img-product-2.jpeg'],
     'Lifestyle': ['images/img-lifestyle-1.jpeg', 'images/img-lifestyle-2.jpeg'],
@@ -80,37 +92,43 @@ manual_category_previews = {
 
 @app.route('/portfolio')
 def portfolio():
-    # Get all items, newest first
+    # 1. Get all uploaded items
     items = PortfolioItem.query.order_by(desc(PortfolioItem.id)).all()
 
-    categories = {}
-
-    # Only calculate the categories for the interactive bottom grid
+    # 2. Create the dictionary for uploaded category cards
+    categories_dict = {}
     for item in items:
-        if item.category not in categories:
-            categories[item.category] = item
+        if item.category not in categories_dict:
+            categories_dict[item.category] = item
 
-    # Pass manual_category_previews to the template instead of calculating it
+    # 4. Pass EVERYTHING to the template
     return render_template(
         'portfolio.html',
-        categories=categories,
-        category_previews=manual_category_previews,
-        intros=category_intros,
+        categories=categories_dict,
+        items=items,                       # <--- Missing dynamic items
+        category_previews=manual_category_previews, # <--- Missing static previews
+        intros=category_intros,            # <--- Missing intros
         active_page='portfolio'
     )
 
 
 @app.route('/portfolio/<category_name>')
 def portfolio_category(category_name):
-    # Fetch all items that match the requested category
-    items = PortfolioItem.query.filter_by(category=category_name).all()
+    # Get the stored category name from the mapping
+    stored_category = category_name_map.get(category_name)
+    if not stored_category:
+        # Optionally handle 404 or fallback
+        flash('Category not found', 'danger')
+        return redirect(url_for('portfolio'))
 
-    # Get the introduction text, or default to an empty string if not found
-    intro = category_intros.get(category_name, '')
+    items = PortfolioItem.query.filter_by(category=stored_category).all()
+    intro = category_intros.get(stored_category, '')
 
-    return render_template('category.html', category_name=category_name, items=items, intro=intro,
+    return render_template('category.html',
+                           category_name=stored_category,
+                           items=items,
+                           intro=intro,
                            active_page='portfolio')
-
 
 @app.route('/about')
 def about():
@@ -179,6 +197,7 @@ def add_item():
     file = request.files['file']
     title = request.form['title']
     category = request.form['category'].strip()
+    category = category_name_map.get(category, category)  # add this line
 
     if file.filename == '' or not title or not category:
         flash('Missing file, title, or category', 'danger')
@@ -200,11 +219,14 @@ def add_item():
 def edit_item(item_id):
     item = PortfolioItem.query.get_or_404(item_id)
     item.title = request.form['title']
-    item.category = request.form['category'].strip()
+
+    # Normalize category using the mapping
+    category_raw = request.form['category'].strip()
+    item.category = category_name_map.get(category_raw, category_raw)
+
     db.session.commit()
     flash('Item updated successfully!', 'success')
     return redirect(url_for('admin'))
-
 
 @app.route('/delete/<int:item_id>', methods=['POST'])
 @login_required
