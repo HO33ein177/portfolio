@@ -38,6 +38,7 @@
 
     .header-text {
         flex: 1;
+        text-align: center;
     }
 
     .category-title {
@@ -46,6 +47,7 @@
         letter-spacing: 2px;
         margin: 0 0 10px 0;
         font-size: 1.5rem;
+        text-align: center;
     }
 
     .category-intro {
@@ -53,6 +55,7 @@
         font-size: 0.9rem;
         margin: 0;
         line-height: 1.4;
+        text-align: center;
     }
 
     /* Arrow icon */
@@ -77,12 +80,12 @@
     }
 
     .accordion-content.active {
-        max-height: 2000px;   /* Large enough to fit any grid */
+        max-height: 2000px;
         padding: 20px;
         border-top: 1px solid #333;
     }
 
-    /* --- Grid Styles --- */
+    /* --- Grid Styles (shared for images and videos) --- */
     .preview-images-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -94,6 +97,8 @@
         overflow: hidden;
         border-radius: 8px;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: #111;
+        position: relative;
     }
 
     .preview-image-card:hover {
@@ -106,13 +111,58 @@
         height: 250px;
         object-fit: cover;
         transition: transform 0.4s ease;
+        display: block;
     }
 
     .preview-image-card:hover .preview-image {
         transform: scale(1.03);
     }
 
-    /* --- Lightbox Modal Styles --- */
+    /* Video thumbnail overlay (play button) */
+    .video-play-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0,0,0,0.6);
+        color: white;
+        font-size: 48px;
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+        pointer-events: none;
+        z-index: 2;
+    }
+
+    .preview-image-card:hover .video-play-overlay {
+        background: rgba(255,0,0,0.8);
+    }
+
+    /* Video title */
+    .video-title {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        color: white;
+        padding: 8px;
+        font-size: 0.85rem;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: 2;
+    }
+
+    .preview-image-card:hover .video-title {
+        opacity: 1;
+    }
+
+    /* --- Lightbox Modal for Images --- */
     #lightbox {
         display: none;
         position: fixed;
@@ -146,12 +196,47 @@
     .close-lightbox:hover {
         color: #aaa;
     }
+
+    /* --- Video Modal (identical in style) --- */
+    .video-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 1001;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .video-modal video {
+        max-width: 90%;
+        max-height: 85vh;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .close-video-modal {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: white;
+        font-size: 40px;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+
+    .close-video-modal:hover {
+        color: #aaa;
+    }
 </style>
 
 <div class="portfolio-container">
+    <!-- Category Accordions for images -->
     {% for category, static_images in category_previews.items() %}
     <div class="category-accordion">
-        <!-- Accordion Header with arrow -->
         <div class="accordion-header" onclick="toggleAccordion(this)">
             <div class="header-text">
                 <h2 class="category-title">{{ category }}</h2>
@@ -162,17 +247,15 @@
             <div class="accordion-icon">▼</div>
         </div>
 
-        <!-- Accordion Content (smooth dropdown) -->
         <div class="accordion-content">
             <div class="preview-images-grid">
-                <!-- 1. Static Images loop -->
+                <!-- Static images -->
                 {% for img_path in static_images %}
                     <div class="preview-image-card">
                         <img class="preview-image" src="{{ url_for('static', filename=img_path) }}" alt="{{ category }} static preview">
                     </div>
                 {% endfor %}
-
-                <!-- 2. Dynamic Uploaded Images loop -->
+                <!-- Uploaded images -->
                 {% if items %}
                     {% for item in items %}
                         {% if item.category == category %}
@@ -186,52 +269,136 @@
         </div>
     </div>
     {% endfor %}
+
+    <!-- Video Accordion (identical structure) -->
+    {% if videos %}
+    <div class="category-accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+            <div class="header-text">
+                <h2 class="category-title">Video Clips</h2>
+                <p class="category-intro">Cinematic moments and behind‑the‑scenes footage</p>
+            </div>
+            <div class="accordion-icon">▼</div>
+        </div>
+
+        <div class="accordion-content">
+            <div class="preview-images-grid" id="video-grid">
+                {% for video in videos %}
+                <div class="preview-image-card" data-video-url="{{ url_for('static', filename='videos/' + video.filename) }}" onclick="openVideoModal(this.getAttribute('data-video-url'))">
+                    <img class="preview-image" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 300 250'%3E%3Crect width='300' height='250' fill='%23111'/%3E%3Ctext x='50%25' y='50%25' fill='%23666' text-anchor='middle' dy='.3em'%3E▶%3C/text%3E%3C/svg%3E" alt="{{ video.title }}">
+                    <div class="video-play-overlay">▶</div>
+                    <div class="video-title">{{ video.title }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 
-<!-- Lightbox Modal -->
+<!-- Image Lightbox -->
 <div id="lightbox">
     <span class="close-lightbox">&times;</span>
     <img id="lightbox-img" src="" alt="Full Screen">
 </div>
 
+<!-- Video Modal -->
+<div id="videoModal" class="video-modal">
+    <span class="close-video-modal">&times;</span>
+    <video id="modalVideo" controls autoplay controlsList="nodownload">
+        <source src="" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+</div>
+
 <script>
-    // Accordion Toggle Logic (smooth height transition)
+    // Accordion Toggle (shared for categories and video)
     function toggleAccordion(headerElement) {
-        // Toggle active class on header (for arrow rotation)
         headerElement.classList.toggle('active');
-        // Find the next sibling which is the accordion-content div
         const content = headerElement.nextElementSibling;
         content.classList.toggle('active');
     }
 
-    // Lightbox Functionality with Event Delegation
+    // Image Lightbox
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
-    const closeBtn = document.querySelector('.close-lightbox');
+    const closeLightbox = document.querySelector('.close-lightbox');
     const container = document.querySelector('.portfolio-container');
 
-    // Listen for clicks within the container to catch both static and dynamic images
     container.addEventListener('click', function(e) {
-        if (e.target.classList.contains('preview-image')) {
+        if (e.target.classList.contains('preview-image') && !e.target.closest('.preview-image-card').hasAttribute('data-video-url')) {
             lightboxImg.src = e.target.src;
             lightbox.style.display = 'flex';
         }
     });
 
-    // Close lightbox using the "X" button
-    closeBtn.addEventListener('click', function() {
+    closeLightbox.addEventListener('click', function() {
         lightbox.style.display = 'none';
     });
-
-    // Close lightbox when clicking anywhere on the background
     lightbox.addEventListener('click', function(e) {
-        if (e.target === lightbox) {
-            lightbox.style.display = 'none';
+        if (e.target === lightbox) lightbox.style.display = 'none';
+    });
+
+    // Video Modal
+    const videoModal = document.getElementById('videoModal');
+    const modalVideo = document.getElementById('modalVideo');
+    const closeVideoModal = document.querySelector('.close-video-modal');
+
+    window.openVideoModal = function(videoSrc) {
+        modalVideo.querySelector('source').setAttribute('src', videoSrc);
+        modalVideo.load();
+        videoModal.style.display = 'flex';
+        modalVideo.play().catch(e => console.log("Autoplay prevented:", e));
+    };
+
+    closeVideoModal.addEventListener('click', function() {
+        videoModal.style.display = 'none';
+        modalVideo.pause();
+        modalVideo.currentTime = 0;
+    });
+    videoModal.addEventListener('click', function(e) {
+        if (e.target === videoModal) {
+            videoModal.style.display = 'none';
+            modalVideo.pause();
+            modalVideo.currentTime = 0;
         }
     });
 
-    // (Optional) Open the first accordion by default for better UX
+    // Extract first frame from videos to use as thumbnail images
     document.addEventListener('DOMContentLoaded', function() {
+        const videoCards = document.querySelectorAll('#video-grid .preview-image-card');
+        videoCards.forEach(card => {
+            const videoUrl = card.getAttribute('data-video-url');
+            const imgElement = card.querySelector('.preview-image');
+
+            const tempVideo = document.createElement('video');
+            tempVideo.muted = true;
+            tempVideo.crossOrigin = "Anonymous";
+            tempVideo.preload = "metadata";
+            tempVideo.src = videoUrl;
+
+            tempVideo.addEventListener('loadeddata', function() {
+                tempVideo.currentTime = 0.1;
+            });
+
+            tempVideo.addEventListener('seeked', function() {
+                const canvas = document.createElement('canvas');
+                const targetHeight = 250;
+                const scale = targetHeight / tempVideo.videoHeight;
+                canvas.width = tempVideo.videoWidth * scale;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                imgElement.src = canvas.toDataURL('image/jpeg');
+                imgElement.style.objectFit = 'cover';
+            });
+
+            tempVideo.onerror = function() {
+                console.warn('Could not load video thumbnail:', videoUrl);
+            };
+        });
+
+        // Open first accordion (first image category) by default
         const firstHeader = document.querySelector('.accordion-header');
         if (firstHeader) {
             firstHeader.classList.add('active');

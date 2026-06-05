@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Videos | Portfolio</title>
+    <style>
+        /* reuse the same styles as admin.html or copy them */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .admin-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .btn-back, .btn-logout {
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+        }
+        .btn-back {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, button {
+            padding: 10px;
+            border-radius: 4px;
+        }
+        button[type="submit"] {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .video-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .video-info strong {
+            display: block;
+        }
+        .btn-delete {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="admin-container">
+    <div class="header">
+        <h1>Video Manager</h1>
+        <div>
+            <a href="{{ url_for('admin') }}" class="btn-back">← Back to Image Admin</a>
+            <a href="{{ url_for('logout') }}" class="btn-logout">Logout</a>
+        </div>
+    </div>
+
+    <h2>Upload New Video</h2>
+    <form action="{{ url_for('add_video') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" name="title" id="title" required>
+        </div>
+        <div class="form-group">
+            <label for="video">Select Video (MP4, WebM)</label>
+            <input type="file" name="video" id="video" accept="video/mp4,video/webm" required>
+        </div>
+        <button type="submit">Upload Video</button>
+    </form>
+
+    <div class="item-list" style="margin-top: 40px;">
+        <h2>Uploaded Videos</h2>
+        {% for video in videos %}
+        <div class="video-item">
+            <div class="video-info">
+                <strong>{{ video.title }}</strong>
+                <small>{{ video.filename }}</small>
+            </div>
+            <form action="{{ url_for('delete_video', video_id=video.id) }}" method="POST" onsubmit="return confirm('Delete this video?')">
+                <button type="submit" class="btn-delete">Delete</button>
+            </form>
+        </div>
+        {% else %}
+        <p>No videos uploaded yet.</p>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

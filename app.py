@@ -16,7 +16,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'po
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['UPLOAD_FOLDER'] = os.path.join(basedir, 'static/uploads')
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50 MB limit
-
+app.config['VIDEO_UPLOAD_FOLDER'] = os.path.join(basedir, 'static/videos')
+app.config['MAX_CONTENT_LENGTH'] = 300 * 1024 * 1024  # 100 MB for videos
 db = SQLAlchemy(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
@@ -33,6 +34,12 @@ class PortfolioItem(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     category = db.Column(db.String(50), nullable=False)
+    filename = db.Column(db.String(100), nullable=False)
+
+# --- Add this new model after the PortfolioItem class ---
+class Video(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
     filename = db.Column(db.String(100), nullable=False)
 
 
@@ -94,6 +101,7 @@ manual_category_previews = {
 def portfolio():
     # 1. Get all uploaded items
     items = PortfolioItem.query.order_by(desc(PortfolioItem.id)).all()
+    videos = Video.query.order_by(desc(Video.id)).all()   # <-- add this line
 
     # 2. Create the dictionary for uploaded category cards
     categories_dict = {}
@@ -107,7 +115,8 @@ def portfolio():
         categories=categories_dict,
         items=items,                       # <--- Missing dynamic items
         category_previews=manual_category_previews, # <--- Missing static previews
-        intros=category_intros,            # <--- Missing intros
+        intros=category_intros,
+        videos=videos,
         active_page='portfolio'
     )
 
@@ -245,12 +254,59 @@ def delete_item(item_id):
     return redirect(url_for('admin'))
 
 
+@app.route('/admin/videos')
+@login_required
+def admin_videos():
+    videos = Video.query.order_by(desc(Video.id)).all()
+    return render_template('admin_videos.html', videos=videos)
+
+
+@app.route('/add_video', methods=['POST'])
+@login_required
+def add_video():
+    if 'video' not in request.files:
+        flash('No video file', 'danger')
+        return redirect(url_for('admin_videos'))
+
+    file = request.files['video']
+    title = request.form['title']
+
+    if file.filename == '' or not title:
+        flash('Missing video or title', 'danger')
+        return redirect(url_for('admin_videos'))
+
+    if file:
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['VIDEO_UPLOAD_FOLDER'], filename))
+        new_video = Video(title=title, filename=filename)
+        db.session.add(new_video)
+        db.session.commit()
+        flash('Video added successfully!', 'success')
+
+    return redirect(url_for('admin_videos'))
+
+
+@app.route('/delete_video/<int:video_id>', methods=['POST'])
+@login_required
+def delete_video(video_id):
+    video = Video.query.get_or_404(video_id)
+    try:
+        os.remove(os.path.join(app.config['VIDEO_UPLOAD_FOLDER'], video.filename))
+    except OSError as e:
+        flash(f"Error deleting file: {e}", "danger")
+    db.session.delete(video)
+    db.session.commit()
+    flash('Video deleted successfully!', 'success')
+    return redirect(url_for('admin_videos'))
+
+
 # --- Main Execution ---
 if __name__ == '__main__':
     # Make sure the upload folder exists
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config['UPLOAD_FOLDER'])
-
+    if not os.path.exists(app.config['VIDEO_UPLOAD_FOLDER']):
+        os.makedirs(app.config['VIDEO_UPLOAD_FOLDER'])
     with app.app_context():
         db.create_all()
         # Create a default user if none exists
